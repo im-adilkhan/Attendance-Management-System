@@ -16,6 +16,8 @@ from app.db.session import get_db
 from app.models.allowed_location import AllowedLocation
 from app.models.app_settings import AppSetting
 from app.models.attendance import Attendance
+from app.models.student import Student
+from app.models.teacher import Teacher
 from app.models.user import User
 from app.schemas.attendance import AttendancePhotoInput
 from app.services.photo_service import save_stamped_photo
@@ -107,32 +109,42 @@ def my_history(user: User = Depends(get_current_user), db: Session = Depends(get
     rows = db.scalars(select(Attendance).where(Attendance.user_id == user.id).order_by(Attendance.date.desc()))
     return [_serialize(row) for row in rows]
 
-@router.get("/records")
-def attendance_records(email: str | None = None, date: str | None = None,
-                       _admin: User = Depends(require_admin), db: Session = Depends(get_db)):
-    query = select(Attendance).order_by(Attendance.date.desc(), Attendance.in_time.desc())
-    if email: query = query.where(or_(Attendance.in_email.ilike("%" + email + "%"),
-                                      Attendance.out_email.ilike("%" + email + "%")))
+def _records_query(email: str | None, date: str | None, name: str | None,
+                   class_id: int | None, department_id: int | None):
+    query = (select(Attendance).join(User, Attendance.user_id == User.id)
+             .outerjoin(Student, Student.user_id == User.id)
+             .outerjoin(Teacher, Teacher.user_id == User.id)
+             .order_by(Attendance.date.desc(), Attendance.in_time.desc()))
+    if email:
+        query = query.where(or_(Attendance.in_email.ilike("%" + email + "%"),
+                                Attendance.out_email.ilike("%" + email + "%")))
+    if name:
+        query = query.where(User.full_name.ilike("%" + name + "%"))
+    if class_id is not None:
+        query = query.where(Student.class_id == class_id)
+    if department_id is not None:
+        query = query.where(Teacher.department_id == department_id)
     if date:
         try:
             query = query.where(Attendance.date == datetime.strptime(date, "%Y-%m-%d").date())
         except ValueError as exc:
             raise HTTPException(status_code=422, detail="Date must be YYYY-MM-DD") from exc
-    return [_serialize(row) for row in db.scalars(query)]
+    return query
+
+@router.get("/records")
+def attendance_records(email: str | None = None, date: str | None = None,
+                       name: str | None = None, class_id: int | None = None,
+                       department_id: int | None = None,
+                       _admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    return [_serialize(row) for row in db.scalars(_records_query(email, date, name, class_id, department_id))]
 
 
 @router.get("/records/export")
 def export_attendance_records(email: str | None = None, date: str | None = None,
+                              name: str | None = None, class_id: int | None = None,
+                              department_id: int | None = None,
                               _admin: User = Depends(require_admin), db: Session = Depends(get_db)):
-    query = select(Attendance).order_by(Attendance.date.desc(), Attendance.in_time.desc())
-    if email:
-        query = query.where(or_(Attendance.in_email.ilike("%" + email + "%"),
-                                Attendance.out_email.ilike("%" + email + "%")))
-    if date:
-        try:
-            query = query.where(Attendance.date == datetime.strptime(date, "%Y-%m-%d").date())
-        except ValueError as exc:
-            raise HTTPException(status_code=422, detail="Date must be YYYY-MM-DD") from exc
+    query = _records_query(email, date, name, class_id, department_id)
     workbook = Workbook()
     sheet = workbook.active
     sheet.title = "Attendance"

@@ -32,7 +32,8 @@ def get_month_data(month: str, db: Session):
     for day_number in range(1, end.day + 1):
         current = date(year, number, day_number); today_rows = [row for row in rows if row.date == current]
         days.append({"date": current.isoformat(), "present": sum(1 for row in today_rows if row.status in {"present", "late", "half-day"}),
-                     "late": sum(1 for row in today_rows if row.status == "late"), "absent": max(0, total_people - len(today_rows))})
+                     "late": sum(1 for row in today_rows if row.status == "late"),
+                     "absent": max(0, total_people - len(today_rows)) if current <= date.today() else 0})
     return {"month": month, "days": days, "records": [{"date": row.date.isoformat(), "email": row.in_email, "status": row.status, "working_hours": row.working_hours} for row in rows]}
 
 @router.get("/monthly")
