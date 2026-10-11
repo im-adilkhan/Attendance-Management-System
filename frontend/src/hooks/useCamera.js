@@ -13,7 +13,13 @@ export default function useCamera() {
     const video = videoRef.current;
     if (!video || !video.videoWidth) return '';
     const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);
+    const context = canvas.getContext('2d');
+    if (!context) return '';
+    // Front-facing camera frames are mirrored on some devices. Flip the saved
+    // canvas so text and the captured photo have their natural orientation.
+    context.translate(canvas.width, 0);
+    context.scale(-1, 1);
+    context.drawImage(video, 0, 0);
     return canvas.toDataURL('image/jpeg', 0.85);
   }, []);
   const stop = useCallback(() => { streamRef.current?.getTracks().forEach((track) => track.stop()); streamRef.current = null; }, []);

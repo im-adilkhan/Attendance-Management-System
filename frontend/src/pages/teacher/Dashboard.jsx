@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import useAuth from '../../hooks/useAuth';
 import LiveClock from '../../components/common/LiveClock';
@@ -28,5 +29,8 @@ export default function TeacherDashboard() {
       <article className="stat-card"><span>Today's status</span><strong>{todayRecord?.status || 'Not marked'}</strong></article>
       <article className="stat-card"><span>Working hours today</span><strong>{todayRecord?.working_hours ?? '—'}</strong></article></div>
     <AttendanceTrendChart days={chartDays} title="Your last 14 days" />
-    <div className="panel"><h2>Quick actions</h2><a className="action-link" href="/teacher/mark-attendance">Mark attendance →</a><a className="action-link" href="/teacher/leave">Apply for leave →</a></div></main>;
+    <div className="panel"><h2>Quick actions</h2><div className="quick-actions">
+      <Link className="action-link quick-action" to="/teacher/mark-attendance">Mark attendance <span aria-hidden="true">→</span></Link>
+      <Link className="action-link quick-action" to="/teacher/leave">Apply for leave <span aria-hidden="true">→</span></Link>
+    </div></div></main>;
 }
