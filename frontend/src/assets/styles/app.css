@@ -62,6 +62,14 @@ tbody tr:hover { background: #f8faff; }
 .progress-track { width: 100%; height: 7px; margin-top: auto; overflow: hidden; border-radius: 99px; background: #edf1f8; }.progress-track span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #3765e8, #62a3f7); transition: width .6s ease; }
 .filter-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); align-items: end; }.filter-bar label { min-width: 0; }.filter-bar button { min-height: 42px; }
 .table-wrap { max-width: 100%; border-radius: 8px; overscroll-behavior-inline: contain; scrollbar-color: #c5cee0 #f2f4f8; scrollbar-width: thin; }.table-wrap table { margin: 0; }
+.topbar .brand { display: inline-flex; align-items: center; gap: .62rem; color: #20376f; }.brand-mark { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 11px; color: white !important; background: linear-gradient(145deg, #315dc8, #21427f 70%, #19a887); box-shadow: 0 5px 12px #244a9636; font-family: Georgia, serif; font-size: 1.1rem; }.topbar .brand-title { color: #20376f; font-size: 1.22rem; }.topbar .brand small { align-self: end; margin: 0 0 4px -.35rem; color: #8692aa; font-size: .52rem; font-weight: 750; letter-spacing: .1em; }
+.dashboard-page > .eyebrow { display: inline-block; padding: .35rem .65rem; border: 1px solid #dce7ff; border-radius: 999px; color: #355ec0; background: linear-gradient(90deg, #edf3ff, #f5fbff); }
+.dashboard-page > h1 { color: #20376f; }
+.dashboard-page .stat-card { position: relative; overflow: hidden; border-top: 3px solid #416de0; background: linear-gradient(145deg, #fff 55%, #f4f7ff); }
+.dashboard-page .stat-card:nth-child(3n + 2) { border-top-color: #23a983; background: linear-gradient(145deg, #fff 55%, #effaf6); }
+.dashboard-page .stat-card:nth-child(3n) { border-top-color: #e9a442; background: linear-gradient(145deg, #fff 55%, #fff8ed); }
+.dashboard-page .stat-card span { color: #687795; }.dashboard-page .stat-card strong { color: #253d78; }
+.dashboard-page .chart-panel { border-color: #e0e7f4; background: linear-gradient(150deg, #fff, #fbfcff); }
 @keyframes clock-pulse { 0%, 100% { box-shadow: 0 0 0 4px #29b7831d; } 50% { box-shadow: 0 0 0 7px #29b78312; } }
 @keyframes bar-grow { from { transform: scaleY(.15); opacity: .45; } to { transform: scaleY(1); opacity: 1; } }
 @media (max-width: 700px) {
@@ -73,6 +81,7 @@ tbody tr:hover { background: #f8faff; }
   table { min-width: 680px; }th, td { padding: .62rem .55rem; font-size: .78rem; }.record-photo { width: 88px; }
   .attendance-grid { grid-template-columns: 1fr; }.attendance-map { height: 250px; }
 }
+@media (max-width: 600px) { .topbar .brand { gap: .45rem; }.brand-mark { width: 31px; height: 31px; border-radius: 9px; }.topbar .brand small { display: none; } }
 @media (max-width: 400px) { .stats-grid { grid-template-columns: 1fr; }.stat-card { min-height: 86px; }.button-row > button { flex-basis: 100%; }.live-clock small { max-width: 245px; } }
 @media (prefers-reduced-motion: reduce) { .live-clock-dot, .attendance-chart rect { animation: none !important; }.progress-track span { transition: none; } }
 

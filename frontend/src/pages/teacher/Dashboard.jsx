@@ -20,7 +20,7 @@ export default function TeacherDashboard() {
       return { date, present: row && ['present', 'late', 'half-day'].includes(row.status) ? 1 : 0, late: row?.status === 'late' ? 1 : 0, absent: 0 };
     });
   }, [rows, today]);
-  return <main className="page-content"><p className="eyebrow">TEACHER WORKSPACE</p><h1>Good day, {user?.full_name?.split(' ')[0]}</h1><p className="muted">Here is your attendance snapshot for today.</p>
+  return <main className="page-content dashboard-page"><p className="eyebrow">BBDIT · {user?.role === 'student' ? 'STUDENT' : 'TEACHER'} DASHBOARD</p><h1>Good day, {user?.full_name?.split(' ')[0]}</h1><p className="muted">Here is your attendance snapshot for today.</p>
     <LiveClock />{error && <p role="alert" className="error-banner">{error}</p>}<div className="stats-grid">
       <article className="stat-card"><span>Today's check-in</span><strong>{todayRecord?.in_time ? new Date(todayRecord.in_time).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }) : 'Not marked'}</strong></article>
       <article className="stat-card"><span>Present days</span><strong>{attended}</strong></article>
