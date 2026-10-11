@@ -1,0 +1,2 @@
+import ResourcePage from '../../components/common/ResourcePage';
+export default function ManageStudents() { return <ResourcePage title="Students" endpoint="/admin/students" fields={[{ name: 'full_name', label: 'Full name' }, { name: 'email', label: 'Email', type: 'email' }, { name: 'roll_number', label: 'Roll number' }, { name: 'password', label: 'Initial password', type: 'password' }]} />; }

@@ -1,0 +1,2 @@
+import ResourcePage from '../../components/common/ResourcePage';
+export default function ManageLocations() { return <ResourcePage title="Locations" endpoint="/admin/locations" fields={[{ name: 'name', label: 'Location name' }, { name: 'latitude', label: 'Latitude', type: 'number' }, { name: 'longitude', label: 'Longitude', type: 'number' }, { name: 'radius_meters', label: 'Radius (m)', type: 'number' }]} />; }

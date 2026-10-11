@@ -1,0 +1,13 @@
+.env
+.venv/
+venv/
+backend/.venv/
+backend/venv/
+backend/attendance.db
+backend/uploads/*
+!backend/uploads/.gitkeep
+frontend/node_modules/
+frontend/dist/
+__pycache__/
+*.py[cod]
+.pytest_cache/
