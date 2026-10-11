@@ -50,7 +50,13 @@ def person_data(db, kind):
         output.append({"id": row.id, "user_id": row.user_id,
             "full_name": user.full_name if user else "", "email": user.email if user else "",
             "employee_number": getattr(row, "employee_number", None),
-            "roll_number": getattr(row, "roll_number", None)})
+            "roll_number": getattr(row, "roll_number", None),
+            "department_id": getattr(row, "department_id", None),
+            "department_name": (db.get(Department, row.department_id).name
+                                if kind == "teachers" and row.department_id and db.get(Department, row.department_id) else None),
+            "class_id": getattr(row, "class_id", None),
+            "class_name": (db.get(CourseClass, row.class_id).name
+                           if kind == "students" and row.class_id and db.get(CourseClass, row.class_id) else None)})
     return output
 
 @router.get("/settings")
@@ -110,19 +116,31 @@ def create_resource(resource: str, values: dict[str, Any], db: Session = Depends
         db.add(user); db.commit(); db.refresh(user)
         return {"id": user.id, "full_name": user.full_name, "email": user.email, "role": user.role}
     if resource in {"teachers", "students"}:
-        allowed = {"full_name", "email", "password", "employee_number" if resource == "teachers" else "roll_number"}
+        allowed = ({"full_name", "email", "password", "employee_number", "department_id"}
+                   if resource == "teachers" else
+                   {"full_name", "email", "password", "roll_number", "class_id"})
         if set(values) - allowed: raise HTTPException(status_code=422, detail="Unsupported field")
-        required = {"full_name", "email", "password"}
+        required = {"full_name", "email", "password", "department_id" if resource == "teachers" else "class_id"}
         if required - set(values): raise HTTPException(status_code=422, detail="Name, email and password are required")
+        assignment_model = Department if resource == "teachers" else CourseClass
+        assignment_id = values["department_id" if resource == "teachers" else "class_id"]
+        if not db.get(assignment_model, assignment_id):
+            raise HTTPException(status_code=422, detail="Select a valid department or course/class")
         from app.core.security import hash_password
         role = "teacher" if resource == "teachers" else "student"
         user = User(full_name=values["full_name"], email=values["email"], role=role,
                     password_hash=hash_password(values["password"]))
         db.add(user); db.flush()
-        profile = Teacher(user_id=user.id, employee_number=values.get("employee_number")) if role == "teacher" else Student(user_id=user.id, roll_number=values.get("roll_number"))
+        profile = (Teacher(user_id=user.id, employee_number=values.get("employee_number"), department_id=values["department_id"])
+                   if role == "teacher" else
+                   Student(user_id=user.id, roll_number=values.get("roll_number"), class_id=values["class_id"]))
         db.add(profile); db.commit(); db.refresh(profile)
         return {"id": profile.id, "user_id": user.id, "full_name": user.full_name, "email": user.email,
-                "employee_number": getattr(profile, "employee_number", None), "roll_number": getattr(profile, "roll_number", None)}
+                "employee_number": getattr(profile, "employee_number", None), "roll_number": getattr(profile, "roll_number", None),
+                "department_id": getattr(profile, "department_id", None),
+                "department_name": db.get(Department, profile.department_id).name if resource == "teachers" else None,
+                "class_id": getattr(profile, "class_id", None),
+                "class_name": db.get(CourseClass, profile.class_id).name if resource == "students" else None}
     if resource not in RESOURCES: raise HTTPException(status_code=404, detail="Unknown resource")
     model, allowed = RESOURCES[resource]
     if set(values) - allowed: raise HTTPException(status_code=422, detail="Unsupported field")
@@ -138,9 +156,15 @@ def update_resource(resource: str, item_id: int, values: dict[str, Any], db: Ses
         row = db.get(model, item_id)
         if row is None: raise HTTPException(status_code=404, detail="Record not found")
         user = db.get(User, row.user_id)
-        profile_fields = {"employee_number"} if resource == "teachers" else {"roll_number"}
+        profile_fields = ({"employee_number", "department_id"} if resource == "teachers" else
+                          {"roll_number", "class_id"})
         for key, value in values.items():
-            if key in profile_fields: setattr(row, key, value)
+            if key in profile_fields:
+                if key in {"department_id", "class_id"}:
+                    assignment_model = Department if key == "department_id" else CourseClass
+                    if not db.get(assignment_model, value):
+                        raise HTTPException(status_code=422, detail="Select a valid department or course/class")
+                setattr(row, key, value)
             elif key in {"full_name", "email"}: setattr(user, key, value)
             else: raise HTTPException(status_code=422, detail="Unsupported field")
         db.commit(); return {"id": row.id, "full_name": user.full_name, "email": user.email}

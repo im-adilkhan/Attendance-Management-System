@@ -24,7 +24,7 @@ Both accept exactly `{photo,latitude,longitude}`. Email, name, address, time, st
 
 Admin-only CRUD collections use GET/POST `/admin/{teachers|students|classes|departments|holidays|locations}`. Update with PATCH `/admin/{collection}/{id}` and delete with DELETE on the same item path. Settings use GET/PUT `/admin/settings`. Review leave requests with GET `/admin/leaves` and POST `/admin/leaves/{id}/approve` or `/reject`.
 
-Teachers/students are created with full_name, email, password, and employee_number or roll_number. Office locations use name, latitude, longitude, radius_meters, and optional is_active.
+Teachers/students are created with full_name, email, password, employee_number or roll_number, and an assignment: teachers require department_id; students require class_id (the course/class record). These assignment ids can be changed with PATCH. Create departments and classes first. Office locations use name, latitude, longitude, radius_meters, and optional is_active.
 
 ## Leaves and reports
 
