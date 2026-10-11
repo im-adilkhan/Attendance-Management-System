@@ -85,6 +85,31 @@ tbody tr:hover { background: #f8faff; }
 @media (max-width: 400px) { .stats-grid { grid-template-columns: 1fr; }.stat-card { min-height: 86px; }.button-row > button { flex-basis: 100%; }.live-clock small { max-width: 245px; } }
 @media (prefers-reduced-motion: reduce) { .live-clock-dot, .attendance-chart rect { animation: none !important; }.progress-track span { transition: none; } }
 
+/* Distinct, coordinated themes for each signed-in campus panel. */
+.app-shell { --role-accent: #416de0; --role-strong: #294b9a; --role-soft: #f3f6ff; --role-border: #dce6ff; }
+.app-shell-admin { --role-accent: #416de0; --role-strong: #294b9a; --role-soft: #f3f6ff; --role-border: #dce6ff; }
+.app-shell-teacher { --role-accent: #159b83; --role-strong: #126d63; --role-soft: #effaf6; --role-border: #d3eee6; }
+.app-shell-student { --role-accent: #8a61d6; --role-strong: #5c4299; --role-soft: #f7f3ff; --role-border: #e8def8; }
+.app-shell .sidebar a.active { color: var(--role-strong); background: var(--role-soft); box-shadow: inset 3px 0 var(--role-accent); }
+.app-shell .sidebar a:hover { color: var(--role-strong); background: var(--role-soft); }
+.app-shell .main-panel .eyebrow, .app-shell .main-panel .action-link { color: var(--role-strong); }
+.app-shell .main-panel .primary-button { background: linear-gradient(105deg, var(--role-strong), var(--role-accent)); }
+.app-shell .main-panel .primary-button:hover:not(:disabled) { filter: saturate(1.12) brightness(1.04); }
+.app-shell .main-panel .panel, .app-shell .main-panel .stat-card { border-top: 3px solid var(--role-accent); border-color: var(--role-border); background: linear-gradient(145deg, #fff 54%, var(--role-soft)); }
+.app-shell .main-panel .panel { border-top-color: var(--role-accent); }
+.app-shell .main-panel .stat-card { border-top-color: var(--role-accent); }
+.app-shell .main-panel .stat-card:nth-child(3n + 2) { border-top-color: #25a881; }
+.app-shell .main-panel .stat-card:nth-child(3n) { border-top-color: #e9a442; }
+.app-shell .main-panel .stat-card strong { color: var(--role-strong); }
+.app-shell .main-panel .panel, .app-shell .main-panel .stat-card { animation: campus-card-enter .55s cubic-bezier(.2,.7,.25,1) both; }
+.app-shell .main-panel .attendance-grid > .panel:nth-child(2) { animation-delay: .1s; }
+.app-shell .main-panel .panel h2 { position: relative; }
+.app-shell .main-panel .panel h2::after { content: ""; display: block; width: 34px; height: 3px; margin-top: .45rem; border-radius: 4px; background: linear-gradient(90deg, var(--role-accent), transparent); }
+.app-shell .main-panel .panel:hover, .app-shell .main-panel .stat-card:hover { box-shadow: 0 14px 30px color-mix(in srgb, var(--role-accent) 13%, transparent); }
+.app-shell .main-panel .progress-track span { background: linear-gradient(90deg, var(--role-strong), var(--role-accent), #69c7aa); }
+@keyframes campus-card-enter { from { opacity: 0; transform: translateY(14px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .app-shell .main-panel .panel, .app-shell .main-panel .stat-card { animation: none !important; } }
+
 /* Attendly sign-in */
 .login-page { --login-ink: #17233b; min-height: 100vh; grid-template-columns: minmax(0, 1.05fr) minmax(430px, .95fr); overflow: hidden; background: #fbfcff; }
 .login-art { position: relative; isolation: isolate; min-height: 100vh; overflow: hidden; padding: clamp(2rem, 5vw, 5rem); background: linear-gradient(145deg, #17285c, #2446a8 58%, #3d68df); }
